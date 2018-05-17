@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence version="2.1" xmlns="http://xmlns.jcp.org/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence http://xmlns.jcp.org/xml/ns/persistence/persistence_2_1.xsd">
+  <persistence-unit name="Cococay_FinalPU" transaction-type="RESOURCE_LOCAL">
+    <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+    <class>cococay_final.Model.Funcionario</class>
+    <class>cococay_final.Model.Chat</class>
+    <class>cococay_final.Model.Equipa</class>
+    <class>cococay_final.Model.FuncaoTrabalho</class>
+    <class>cococay_final.Model.Feriado</class>
+    <class>cococay_final.Model.Ferias</class>
+    <class>cococay_final.Model.RestricaoFerias</class>
+    <class>cococay_final.Model.MensagemChat</class>
+    <class>cococay_final.Model.Falta</class>
+    <class>cococay_final.Model.Login</class>
+    <class>cococay_final.Model.ObjetivoMensagem</class>
+    <properties>
+      <property name="javax.persistence.jdbc.url" value="jdbc:oracle:thin:@10.211.55.15:1521:xe"/>
+      <property name="javax.persistence.jdbc.user" value="projeto2"/>
+      <property name="javax.persistence.jdbc.driver" value="oracle.jdbc.OracleDriver"/>
+      <property name="javax.persistence.jdbc.password" value="1234"/>
+    </properties>
+  </persistence-unit>
+</persistence>
