@@ -17,26 +17,13 @@ import javafx.stage.Stage;
  *
  * @author joaocosta-ipvc
  */
-public class Cococay_Final extends Application {
+public class main extends Application {
     
     @Override
     public void start(Stage primaryStage) {
-        Button btn = new Button();
-        btn.setText("Say 'Hello World'");
-        btn.setOnAction(new EventHandler<ActionEvent>() {
-            
-            @Override
-            public void handle(ActionEvent event) {
-                System.out.println("Hello World!");
-            }
-        });
-        
         StackPane root = new StackPane();
-        root.getChildren().add(btn);
         
-        Scene scene = new Scene(root, 800, 600);
-        
-        primaryStage.setTitle("Hello World!");
+        Scene scene = new Scene(root);
         primaryStage.setScene(scene);
         primaryStage.show();
     }
