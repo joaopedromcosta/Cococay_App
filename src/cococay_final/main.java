@@ -24,15 +24,14 @@ public class main extends Application {
     public void start(Stage primaryStage) {
         Parent root = null;
         try {
-            root = FXMLLoader.load(getClass().getResource("FXMLLogin.fxml"));
+            root = FXMLLoader.load(getClass().getResource("View/FXMLLogin.fxml"));
         } catch (IOException ex) {
-            Logger.getLogger(main.class.getName()).log(Level.SEVERE, null, ex);
+            
         }
         Scene scene = new Scene(root);
         
         primaryStage.setScene(scene);
         primaryStage.show();
-        
     }
 
     /**
