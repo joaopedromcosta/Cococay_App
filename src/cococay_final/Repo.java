@@ -20,7 +20,7 @@ import javax.persistence.Persistence;
  *
  * @author joaocosta-ipvc
  */
-public class Repository {
+public class Repo {
     
     EntityManager em;
     EntityManagerFactory emf;
@@ -30,7 +30,7 @@ public class Repository {
     
     
 
-    public Repository() {
+    public Repo() {
         funcionarios = new ArrayList<>();
         emf= Persistence.createEntityManagerFactory("JavaFXBDPU");
         em=emf.createEntityManager();
