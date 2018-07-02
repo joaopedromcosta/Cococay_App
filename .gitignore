@@ -53,6 +53,7 @@ nbbuild/
 dist/
 nbdist/
 .nb-gradle/
+src/META-INF/
 
 .DS_Store
 

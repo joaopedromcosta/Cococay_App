@@ -412,6 +412,26 @@ public class Repository {
         holidayTemp.setDataFim(Date.valueOf(dtPickerEnd.getValue()));
         //
         this.insert(holidayTemp);
+        //subtract the number of days requested to the total
+        String sql_statment = null;
+        sql_statment = "select numero_dias_ferias_total, numero_dias_ferias_atraso from funcionario where id_funcionario = '"+this.loggedEmployee.getIdFuncionario()+"'";
+        this.select(sql_statment);
+        int total = 0;
+        int totalLastYear = 0;
+        try {
+            total = this.result.getShort("numero_dias_ferias_total");
+            totalLastYear = this.result.getShort("numero_dias_ferias_atraso");
+        } catch (SQLException ex) { }
+        this.closeResult();
+        if(totalLastYear - numberOfDays < 0){
+            total = total - numberOfDays;//If is below 0 then we must subtract to the remaining days
+            sql_statment = "update funcionario set numero_dias_ferias_total = " +total+", numero_dias_ferias_atraso = 0 where id_funcionario = '"+this.loggedEmployee.getIdFuncionario()+"'";
+        }else{
+            sql_statment = "update funcionario set numero_dias_ferias_atraso = numero_dias_ferias_atraso - "+numberOfDays+", numero_dias_ferias_total - " + numberOfDays
+                    + " where id_funcionario = '"+this.loggedEmployee.getIdFuncionario()+"'";
+        }
+        this.update(sql_statment);
+        
     }
     //Get notifications for the current logged user
     public List<String> getNotifications() {
