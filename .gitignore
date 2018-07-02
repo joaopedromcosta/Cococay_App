@@ -54,7 +54,8 @@ dist/
 nbdist/
 .nb-gradle/
 src/META-INF/
-
+nbactions.xml
+nb-configuration.xml
 .DS_Store
 
 # Built application files

@@ -160,7 +160,9 @@ public class FXMLHomeScreenRHController implements Initializable {
     //Employees
     @FXML
     public void btnEmployeesClicked(ActionEvent event){
-        
+        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        stage.setTitle(Repository.getAppName() + " - Employees");
+        this.ChangePane(getClass().getResource("FXMLEmployees.fxml"));
     }
     //Departments
     @FXML

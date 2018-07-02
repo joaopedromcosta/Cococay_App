@@ -320,7 +320,8 @@ public class Repository {
         //Get the number of employees for each department of the logged employee that are in holidays for the current date given
         for(Long id: mapDptMaxEmployeesOut.keySet()){
             sql_statement = "select count(*) from membros_equipa, ferias where membros_equipa.id_funcionario = ferias.ID_FUNCIONARIO "
-                + "and membros_equipa.ID_EQUIPA = '"+ id +"' and ferias.DATA_INICIO <= to_date('"+ date +"','dd/mm/yyyy') and ferias.DATA_FIM >= to_date('"+ date +"','dd/mm/yyyy')";
+                + "and membros_equipa.ID_EQUIPA = '"+ id +"' and ferias.DATA_INICIO <= to_date('"+ date +"','dd/mm/yyyy') and ferias.DATA_FIM >= to_date('"+ date +"','dd/mm/yyyy') and"
+                    + "((verificado_rh = '0' and aprovado = '0') or (verificado_rh = '1' and aprovado = '1'))";
             this.select(sql_statement);
             try {
                 count = this.result.getShort("count(*)");
@@ -342,7 +343,8 @@ public class Repository {
     //Check if logged employee has holidays already scheduled in the current period
     public boolean hasAlreadyScheduledHolidays(String date){
         String sql_statement = "select count(*) from ferias where id_funcionario = '"+this.loggedEmployee.getIdFuncionario()+"' and "
-                + "DATA_INICIO <= to_date('"+ date +"','dd/mm/yyyy') and DATA_FIM >= to_date('"+ date +"','dd/mm/yyyy')";
+                + "DATA_INICIO <= to_date('"+ date +"','dd/mm/yyyy') and DATA_FIM >= to_date('"+ date +"','dd/mm/yyyy') and "
+                + "((verificado_rh = '0' and aprovado = '0') or (verificado_rh = '1' and aprovado = '1'))";
         this.select(sql_statement);
         if(this.result == null){
             return false;
@@ -427,7 +429,7 @@ public class Repository {
             total = total - numberOfDays;//If is below 0 then we must subtract to the remaining days
             sql_statment = "update funcionario set numero_dias_ferias_total = " +total+", numero_dias_ferias_atraso = 0 where id_funcionario = '"+this.loggedEmployee.getIdFuncionario()+"'";
         }else{
-            sql_statment = "update funcionario set numero_dias_ferias_atraso = numero_dias_ferias_atraso - "+numberOfDays+", numero_dias_ferias_total - " + numberOfDays
+            sql_statment = "update funcionario set numero_dias_ferias_atraso = numero_dias_ferias_atraso - "+numberOfDays+", numero_dias_ferias_total = numero_dias_ferias_total - " + numberOfDays
                     + " where id_funcionario = '"+this.loggedEmployee.getIdFuncionario()+"'";
         }
         this.update(sql_statment);
@@ -476,7 +478,9 @@ public class Repository {
         //Get all refused requests for holidays and show them to the user
         if(!this.loggedEmployeeDpt.equals("Human Resources")){
             sql_stament = "select FERIAS.DATA_INICIO, FERIAS.DATA_FIM FROM FERIAS WHERE "
-                    + "VERIFICADO_RH = '1' AND APROVADO = '0' AND DATA_INICIO >= TO_DATE('"+date+"','DD/MM/YYYY') and id_funcionario = '"+this.loggedEmployee.getIdFuncionario()+"'";
+                    + "VERIFICADO_RH = '1' AND APROVADO = '0' AND DATA_INICIO >= TO_DATE('"+date+"','DD/MM/YYYY') and id_funcionario = '"+this.loggedEmployee.getIdFuncionario()+"' "
+                    + "and not exists (select FERIAS.DATA_INICIO, FERIAS.DATA_FIM FROM FERIAS WHERE VERIFICADO_RH = '1' AND APROVADO = '1' AND DATA_INICIO >= "
+                    + "TO_DATE('"+date+"','DD/MM/YYYY') and id_funcionario = '"+this.loggedEmployee.getIdFuncionario()+"')";
             this.select(sql_stament);
             if(this.result != null){
                 try {
@@ -488,6 +492,23 @@ public class Repository {
                     }
                 } catch (SQLException ex) { }
             }
+            this.closeResult();
+            System.out.println("Hello");
+            sql_stament = "select FERIAS.DATA_INICIO, FERIAS.DATA_FIM FROM FERIAS WHERE "
+                    + "VERIFICADO_RH = '1' AND APROVADO = '1' AND DATA_INICIO >= TO_DATE('"+date+"','DD/MM/YYYY') and id_funcionario = '"+this.loggedEmployee.getIdFuncionario()+"'";
+            this.select(sql_stament);
+            if(this.result != null){
+                try {
+                    temp.add("Your request for holidays starting at " + this.result.getDate("data_inicio") + " until " + this.result.getDate("data_fim") + " "
+                            + "has been accepted by the Human Resources Dpt.!");
+                    while(this.result.next()){
+                        temp.add("Your request for holidays starting at " + this.result.getDate("data_inicio") + " until " + this.result.getDate("data_fim") + " "
+                            + "has been accepted by the Human Resources Dpt.!");
+                    }
+                } catch (SQLException ex) { }
+            }
+            this.closeResult();
+            
         }
         //Notifications for all departments
         //Check if there are previous year holidays left to schedule
@@ -508,7 +529,7 @@ public class Repository {
             return temp.size();
         return 0;
     }
-
+    //Get all the requests waiting for validation
     public List<Requests> getRequestsList() {
         DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
         List<Requests> temp = new ArrayList<>();
@@ -613,6 +634,18 @@ public class Repository {
                 this.update(sql_statement);
             }
         }
+    }
+
+    public List<EmployeesForList> getEmployeesList() {
+        List<EmployeesForList> tempList = new ArrayList<>();
+        DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+        //
+        String sql_statement = "SELECT FUNCIONARIO.ID_FUNCIONARIO, FUNCIONARIO.NOME, FUNCIONARIO.DATA_CONTRATO, EQUIPA.DESIGNACAO from FUNCIONARIO, EQUIPA, "
+                + "MEMBROS_EQUIPA WHERE FUNCIONARIO.ID_FUNCIONARIO = MEMBROS_EQUIPA.ID_FUNCIONARIO AND MEMBROS_EQUIPA.ID_EQUIPA = EQUIPA.ID_EQUIPA "
+                + "ORDER BY FUNCIONARIO.ID_FUNCIONARIO";
+        
+        
+        return tempList;
     }
 
 }
