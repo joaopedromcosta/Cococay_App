@@ -1,0 +1,165 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : Jun 13, 2018, 2:14:26 PM
+    Author     : joaocosta-ipvc
+*/
+
+.button-log {
+    -fx-background-color: #de001a;
+    -fx-text-fill: white;
+    -fx-alignment: CENTER;
+    -fx-border-color: #de001a;
+    -fx-border-radius:1px;
+}
+/**/
+.button-log:hover{
+    -fx-background-color: #ff6b6b;
+    -fx-text-fill: white;
+    -fx-alignment: CENTER;
+    -fx-border-color: #ff6b6b;
+}
+/**/
+.button-home{
+    -fx-background-color: #ff6b6b;
+    -fx-text-fill: white;
+    -fx-alignment: CENTER;
+    -fx-border-color: #ff6b6b;
+    -fx-border-radius:1px;
+}
+/**/
+.button-home:hover {
+    -fx-background-color: #de001a;
+    -fx-text-fill: white;
+    -fx-alignment: CENTER;
+    -fx-border-color: #de001a;
+}
+/**/
+.button-options{
+    -fx-background-color: #ffffff;
+    -fx-border-color: #ffffff;
+    -fx-border-radius:1px;
+}
+/**/
+.button-options:hover {
+    -fx-background-color: #ff6b6b;
+    -fx-alignment: CENTER;
+    -fx-border-color: #ff6b6b;
+}
+/*Styles for buttonBar buttons with modified selected proprierties'*/
+.button-barra {
+    -fx-background-color: #ffffff;-fx-border-color: #ffffff;-fx-font-weight: bold;-fx-border-radius:1px;
+}
+.button-barra:hover {
+    -fx-background-color: #ff6b6b;
+    -fx-text-fill: white;
+    -fx-border-color: #ff6b6b;
+}
+/**/
+.text-input{
+    -fx-focus-color: #de001a; 
+    -fx-highlight-fill: #ff6b6b;
+    -fx-outer-border: #ff6b6b;
+    -fx-inner-border: #ff6b6b;
+    -fx-highlight-text-fill: black;
+}
+/**/
+.hyperlink{
+    -fx-text-fill: black;
+}
+/**/
+.scroll-bar {
+    -fx-background-color: transparent;
+}
+.scroll-bar .increment-arrow,
+.scroll-bar .decrement-arrow{
+	-fx-shape: " ";	
+	-fx-padding:0;
+}
+/**/
+.scroll-bar:horizontal .track,
+.scroll-bar:vertical .track{
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+}
+.scroll-bar:vertical .increment-button ,
+.scroll-bar:vertical .decrement-button {
+    -fx-background-color:transparent;
+    -fx-background-radius: 0em;
+    -fx-padding:0 5 0 0;
+ }
+ .scroll-bar:horizontal .increment-button ,
+.scroll-bar:horizontal .decrement-button {
+    -fx-background-color:transparent;
+    -fx-background-radius: 0em;
+    -fx-padding:0 0 5 0;
+ }
+/**/
+.scroll-bar:horizontal .thumb,
+.scroll-bar:vertical .thumb {
+    -fx-background-color: #919191;
+}
+
+.scroll-bar .decrement-arrow {
+    -fx-padding:1.25;
+ }
+.scroll-bar .increment-arrow {
+    -fx-padding:1.25;
+}
+/**/
+.borderpane-border {
+    -fx-border-color: #919191;
+}
+/**/
+.check-box .box {
+    -fx-background-color: white;
+    -fx-shadow-highlight-color: #de001a;
+    -fx-border-color: #de001a;
+    -fx-border-radius:1px;
+}
+
+.check-box:selected .mark {
+    -fx-background-color: #de001a;
+}
+
+.date-picker {
+    -fx-background-color: #ff6b6b;
+    -fx-border-color: #ff6b6b;
+    -fx-border-radius:2px;
+}
+
+.date-picker .choice-box > .context-menu {
+    -fx-background: yellow ;
+}
+
+.table-view{
+   -fx-background-color: transparent;
+}
+
+.table-view .column-header-background{
+    -fx-background-color: #ff6b6b;
+}
+
+.table-view .column-header-background .label{
+    -fx-text-fill: white;
+    -fx-alignment: CENTER;
+    -fx-border-color: #ff6b6b;
+    -fx-border-radius:1px;
+}
+
+.table-view .column-header {
+    -fx-background-color: transparent;
+}
+
+.table-view .table-cell{
+    -fx-text-fill: black;
+}
+
+.table-row-cell:selected {
+    -fx-background-color: #ff8c8c;
+    -fx-background-insets: 0;
+    -fx-background-radius: 1;
+}

@@ -98,16 +98,22 @@ public class Ferias implements Serializable {
         this.dataFim = dataFim;
     }
 
-    public short getVerificadoRh() {
-        return verificadoRh;
+    public boolean getVerificadoRh() {
+        if(this.verificadoRh == 1)
+            return true;
+        else
+            return false;
     }
 
     public void setVerificadoRh(short verificadoRh) {
         this.verificadoRh = verificadoRh;
     }
 
-    public short getAprovado() {
-        return aprovado;
+    public boolean getAprovado() {
+        if(this.aprovado == 1)
+            return true;
+        else
+            return false;
     }
 
     public void setAprovado(short aprovado) {

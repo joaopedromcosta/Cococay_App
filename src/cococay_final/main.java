@@ -29,7 +29,9 @@ public class main extends Application {
             
         }
         Scene scene = new Scene(root);
-        
+        primaryStage.centerOnScreen();
+        primaryStage.setTitle(Repository.getAppName() + " - LogIn");
+        primaryStage.setResizable(false);
         primaryStage.setScene(scene);
         primaryStage.show();
     }
