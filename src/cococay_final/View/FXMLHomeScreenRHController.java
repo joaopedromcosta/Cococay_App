@@ -17,6 +17,7 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.MenuBar;
 import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -30,10 +31,13 @@ import javafx.stage.Stage;
  * @author joaocosta-ipvc
  */
 public class FXMLHomeScreenRHController implements Initializable {
+    @FXML MenuBar menuBar;
+    
     @FXML VBox optionsVBox;
     
     @FXML Label lblEmployeeName;
     @FXML Label lblEmployeeDpt;
+    @FXML Label lblNextHolidays;
     //Program Options Buttons
     @FXML Button btnLogOut, btnHomeScreen, btnNotifications;
     @FXML Button btnCalendar;
@@ -59,7 +63,8 @@ public class FXMLHomeScreenRHController implements Initializable {
         //Set labels regarding the user logged name and department 
         this.lblEmployeeName.setText(Repository.getSingleton().getLoggedEmployee().getNome());
         this.lblEmployeeDpt.setText(Repository.getSingleton().getDepartmentLoggedUser(Repository.getSingleton().getLoggedEmployee().getIdFuncionario()) + " Dpt.");
-        
+        this.lblNextHolidays.setText("Next Holidays: " + Repository.getSingleton().getNextHolidays());
+        //
         if(Repository.getSingleton().getDepartmentLoggedUser(Repository.getSingleton().getLoggedEmployee().getIdFuncionario()).equals("Human Resources")){//If human resources logged show all option in the main menu
             //Tooltips for all the options buttons
             this.btnNotifications.setGraphic(new ImageView(new Image(getClass().getResourceAsStream("/cococay_final/Assets/alerts.png"))));
@@ -76,8 +81,8 @@ public class FXMLHomeScreenRHController implements Initializable {
             this.btnValidate.setTooltip(new Tooltip("Validate Requests"));
             this.btnAddRestriction.setGraphic(new ImageView(new Image(getClass().getResourceAsStream("/cococay_final/Assets/cancel.png"))));
             this.btnAddRestriction.setTooltip(new Tooltip("Add Restriction"));
-            this.btnNewGoal.setGraphic(new ImageView(new Image(getClass().getResourceAsStream("/cococay_final/Assets/goal.png"))));
-            this.btnNewGoal.setTooltip(new Tooltip("New Goal"));
+            //this.btnNewGoal.setGraphic(new ImageView(new Image(getClass().getResourceAsStream("/cococay_final/Assets/goal.png"))));
+            //this.btnNewGoal.setTooltip(new Tooltip("New Goal"));
             this.btnEmployees.setGraphic(new ImageView(new Image(getClass().getResourceAsStream("/cococay_final/Assets/add_user.png"))));
             this.btnEmployees.setTooltip(new Tooltip("Employees"));
             this.btnTeams.setGraphic(new ImageView(new Image(getClass().getResourceAsStream("/cococay_final/Assets/add_user_group.png"))));
@@ -99,17 +104,17 @@ public class FXMLHomeScreenRHController implements Initializable {
             this.btnNotifications.setTooltip(new Tooltip("Notification Center"));
             this.btnValidate.setVisible(false);
             this.btnAddRestriction.setVisible(false);
-            this.btnNewGoal.setVisible(false);
             this.btnEmployees.setVisible(false);
             this.btnTeams.setVisible(false);
-            this.btnRecordAbsence.setVisible(false);
             this.btnListData.setVisible(false);
-            //Decrease vbox size in order to hide scroll bar
-            this.optionsVBox.setMaxHeight(400);
+            
         }
+        this.btnNewGoal.setVisible(false);
+        //this.btnRecordAbsence.setVisible(false);
+        //Decrease vbox size in order to hide scroll bar
+        this.optionsVBox.setMaxHeight(410);
         this.btnNotifications.setText(String.valueOf(Repository.getSingleton().getNumberNotifications()));
-        
-        
+        this.menuBar.setVisible(false);
     }  
     //Go back to login menu method when btnLogOut is clicked
     public void setBackHandler(IBackEvent event){
@@ -124,7 +129,7 @@ public class FXMLHomeScreenRHController implements Initializable {
             e.printStackTrace();
         }
         this.optionsContainerForHomeScreen.setVisible(true);
-        this.optionsContainerForHomeScreen.setTop(parent);
+        this.optionsContainerForHomeScreen.setCenter(parent);
     }
     //Calendar 
     @FXML
@@ -150,7 +155,9 @@ public class FXMLHomeScreenRHController implements Initializable {
     //Restrictions 
     @FXML
     public void btnAddRestrictionsClicked(ActionEvent event){
-        
+        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        stage.setTitle(Repository.getAppName() + " - Restrictions");
+        this.ChangePane(getClass().getResource("FXMLRestrictionsListOptions.fxml"));
     }
     //Add new goal
     @FXML
@@ -162,22 +169,28 @@ public class FXMLHomeScreenRHController implements Initializable {
     public void btnEmployeesClicked(ActionEvent event){
         Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         stage.setTitle(Repository.getAppName() + " - Employees");
-        this.ChangePane(getClass().getResource("FXMLEmployees.fxml"));
+        this.ChangePane(getClass().getResource("FXMLEmployeesListOptions.fxml"));
     }
     //Departments
     @FXML
     public void btnDepartmentsClicked(ActionEvent event){
-        
+        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        stage.setTitle(Repository.getAppName() + " - Departments");
+        this.ChangePane(getClass().getResource("FXMLDepartments.fxml"));
     }
     //Record absence
     @FXML
     public void btnRecordAbsenceClicked(ActionEvent event){
-        
+        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        stage.setTitle(Repository.getAppName() + " - Absences");
+        this.ChangePane(getClass().getResource("FXMLAbsencesOptions.fxml"));
     }
     //List Data
     @FXML
     public void btnListDataClicked(ActionEvent event){
-        
+        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        stage.setTitle(Repository.getAppName() + " - List Data");
+        this.ChangePane(getClass().getResource("FXMLListData.fxml"));
     }
     
     //Go to home screen wheen btnHomeScreen is clicked
@@ -188,7 +201,7 @@ public class FXMLHomeScreenRHController implements Initializable {
         this.btnNotifications.setText(String.valueOf(Repository.getSingleton().getNumberNotifications()));
         //Eventually replace with a home screen with any content that may matter to the company
         //this.optionsContainerForHomeScreen.setVisible(false);
-        this.optionsContainerForHomeScreen.setTop(null);
+        this.optionsContainerForHomeScreen.setCenter(null);
     }
     //
     public void goToNotificationsCenter(ActionEvent event){
@@ -202,6 +215,6 @@ public class FXMLHomeScreenRHController implements Initializable {
             e.printStackTrace();
         }
         this.optionsContainerForHomeScreen.setVisible(true);
-        this.optionsContainerForHomeScreen.setTop(parent);
+        this.optionsContainerForHomeScreen.setCenter(parent);
     }
 }

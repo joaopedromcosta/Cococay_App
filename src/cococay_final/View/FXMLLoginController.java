@@ -5,6 +5,7 @@
  */
 package cococay_final.View;
 
+import cococay_final.Model.Login;
 import cococay_final.Repository;
 import java.io.IOException;
 import java.net.URL;
@@ -25,6 +26,7 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 
 /**
@@ -34,12 +36,14 @@ import javafx.stage.Stage;
  */
 public class FXMLLoginController implements Initializable {
 
+    @FXML BorderPane container;
+    private Node centerPane;
     @FXML private Button btnLogIn;
     @FXML private TextField txtUsername;
     @FXML private PasswordField txtPassword;
     @FXML private Label lblError;
     
-    @FXML private Hyperlink hlinkRegister, hlinkRecover;
+    @FXML private Hyperlink hlinkRecover;
     /**
      * Initializes the controller class.
      */
@@ -47,6 +51,11 @@ public class FXMLLoginController implements Initializable {
     public void initialize(URL url, ResourceBundle rb) {
         // TODO
         this.lblError.setText("");
+        
+        //Remove after complete
+        this.txtUsername.setText("claudiacosta");
+        this.txtPassword.setText("claudiacosta");
+        this.centerPane = this.container.getCenter();
     }    
     
     @FXML
@@ -69,12 +78,43 @@ public class FXMLLoginController implements Initializable {
     }
     
     @FXML
-    private void btnRegisterClicked(ActionEvent event){
-        System.out.println("Register new user");
-    }
-    @FXML
     private void btnRecoverClicked(ActionEvent event){
+        if(this.txtUsername.getText().isEmpty()){
+            this.lblError.setText("Insert your username first");
+            return;
+        }
+        Login log;
+        try {
+            log = Repository.getSingleton().getLoginData(this.txtUsername.getText());
+        } catch (Exception ex) {
+            this.lblError.setText(ex.getMessage());
+            return;
+        }
         System.out.println("Recover account");
+        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("FXMLRecoverPassword.fxml"));
+        Parent parent = null;
+        try {
+            parent = loader.load();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        FXMLRecoverPasswordController controller = loader.getController();
+        controller.setBackHandler(new IBackEvent() {
+            @Override
+            public void goBack(ActionEvent backEvent) {
+                container.setCenter(centerPane);
+                txtPassword.setText("");
+                txtPassword.setPromptText("insert your password");
+                txtUsername.setText("");
+                txtUsername.setPromptText("insert your user name");
+                lblError.setText("");
+                stage.setTitle(Repository.getAppName() + " - LogIn");
+            }
+        });
+        controller.setLog(log);
+        this.container.setCenter(parent);
+        stage.setTitle(Repository.getAppName() + " - Recover Password");
     }
 
     private void goToHomeScreen(boolean employeeHome, ActionEvent event) {

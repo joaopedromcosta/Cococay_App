@@ -54,6 +54,18 @@ public class Equipa implements Serializable {
         @JoinColumn(name = "ID_FUNCIONARIO", referencedColumnName = "ID_FUNCIONARIO")})
     @ManyToMany
     private Collection<Funcionario> funcionarioCollection;
+    
+    @Basic(optional = false)
+    @Column(name = "ABREVIATURA")
+    private String abreviatura;
+
+    public String getAbreviatura() {
+        return abreviatura;
+    }
+
+    public void setAbreviatura(String abreviatura) {
+        this.abreviatura = abreviatura;
+    }
 
     public Equipa() {
     }
@@ -134,5 +146,6 @@ public class Equipa implements Serializable {
     public String toString() {
         return "cococay_final.Equipa[ idEquipa=" + idEquipa + " ]";
     }
+
     
 }

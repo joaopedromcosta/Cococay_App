@@ -173,6 +173,7 @@ public class FXMLNewRequestController implements Initializable {
             this.checkFinalDates();
             this.showConfirmation("Confirm New Request","Are you sure you want to open a new request?");
             Repository.getSingleton().addNewHoliday(this.dtPickerBegin, this.dtPickerEnd, this.numberOfDaysSelected(true));
+            this.showInformation("Success", "Your request has been registed. Now you must wait for a validation!");
         } catch (Exception ex) {
             this.lblWarnings.setText(ex.getMessage());
         }
@@ -209,7 +210,6 @@ public class FXMLNewRequestController implements Initializable {
         System.out.println("Diference in days: " + (ChronoUnit.DAYS.between(beginDt, endDt)));
         //Get number of days between two dates including weekends and the begin and end dates
         int temp = (int) (ChronoUnit.DAYS.between(beginDt, endDt)) + 1;
-        //System.out.println("\t\tDays between two dates: " + temp);
         //Set a calendar type of date corresponding to the datepicker begin
         Calendar calendarDateBegin = Calendar.getInstance();
         calendarDateBegin.set(beginDt.getYear(), beginDt.getMonthValue() - 1, beginDt.getDayOfMonth());
@@ -257,14 +257,21 @@ public class FXMLNewRequestController implements Initializable {
         }
     }
 
+    //Show alert box
     private void showConfirmation(String title, String header) throws Exception{
-        Alert alert = new Alert(AlertType.CONFIRMATION, "", ButtonType.YES, ButtonType.NO);
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "", ButtonType.YES, ButtonType.NO);
         alert.setTitle(title);
         alert.setHeaderText(header);
         Optional<ButtonType> option = alert.showAndWait();
         if((option.get() == ButtonType.NO)){
             throw new Exception("");
         }
+    }
+    private void showInformation(String title, String header) throws Exception{
+        Alert alert = new Alert(Alert.AlertType.INFORMATION, "", ButtonType.FINISH);
+        alert.setTitle(title);
+        alert.setHeaderText(header);
+        Optional<ButtonType> option = alert.showAndWait();
     }
     
     @FXML

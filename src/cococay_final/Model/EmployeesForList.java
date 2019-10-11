@@ -18,11 +18,10 @@ public class EmployeesForList {
     //
     public EmployeesForList() {
     }
-    public EmployeesForList(Long id, String name, String startDate, String department) {
+    public EmployeesForList(Long id, String name, String startDate) {
         this.id = id;
         this.name = name;
         this.startDate = startDate;
-        this.department = department;
     }
     //
 

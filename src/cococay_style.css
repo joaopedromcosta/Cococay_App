@@ -65,10 +65,11 @@ and open the template in the editor.
     -fx-outer-border: #ff6b6b;
     -fx-inner-border: #ff6b6b;
     -fx-highlight-text-fill: black;
+    
 }
 /**/
 .hyperlink{
-    -fx-text-fill: black;
+    -fx-text-fill: #de001a;
 }
 /**/
 .scroll-bar {
@@ -135,6 +136,11 @@ and open the template in the editor.
     -fx-background: yellow ;
 }
 
+.date-picker:focused {
+    -fx-background-color: #ff6b6b;
+    
+}
+
 .table-view{
    -fx-background-color: transparent;
 }
@@ -156,10 +162,79 @@ and open the template in the editor.
 
 .table-view .table-cell{
     -fx-text-fill: black;
+    -fx-alignment: CENTER;
 }
 
 .table-row-cell:selected {
     -fx-background-color: #ff8c8c;
     -fx-background-insets: 0;
     -fx-background-radius: 1;
+}
+
+.vbox {
+    -fx-border-color: #de001a;
+    -fx-border-width: 1;
+    -fx-border-style: solid;
+}
+
+
+.combo-box .list-cell {
+    -fx-background: white;
+    -fx-background-color: transparent;
+    -fx-text-fill: -fx-text-base-color;
+    -fx-padding: 3 0 2 7;
+}
+
+.combo-box-popup .list-view {
+    -fx-background-color: white, white;
+    -fx-background-insets: 0, 1;
+    -fx-effect: dropshadow( three-pass-box , rgba(0,0,0,0.6) , 8, 0.0 , 0 , 0 );
+}   
+
+.combo-box-popup .list-view .list-cell {
+    -fx-padding: 4 0 4 5;
+
+    /* No alternate highlighting */
+    -fx-background-color: white;
+}
+
+.combo-box-popup .list-view .list-cell:filled:selected, .combo-box-popup .list-view .list-cell:filled:selected:hover {
+    -fx-background: -fx-accent;
+    -fx-background-color: #ff6b6b;
+    -fx-text-fill: -fx-selection-bar-text;
+}
+
+.combo-box-popup .list-view .list-cell:filled:hover {
+    -fx-background-color: #ff6b6b;
+    -fx-text-fill: -fx-text-inner-color;
+}
+
+.combo-box-base  {
+    -fx-background-color: white, white, white, white;
+    -fx-background-radius: 5, 5, 4, 3;
+    -fx-background-insets: 0 0 -1 0, 0, 1, 2;
+    -fx-padding: 0;
+}
+
+.combo-box-base:hover{
+    -fx-color: -fx-hover-base;
+}
+
+.combo-box-base:showing {
+    -fx-color: -fx-pressed-base;
+}
+
+.combo-box-base:focused {
+    -fx-background-color: white;
+    -fx-background-radius: 6.4, 4, 5, 3;
+    -fx-background-insets: -1.4, 0, 1, 2;
+}
+
+.list-cell {
+    -fx-background-insets: 0 ;
+}
+
+.list-cell:filled:selected:focused, .list-cell:filled:selected {
+    -fx-background-color: #ff8c8c;
+    -fx-text-fill: black;
 }

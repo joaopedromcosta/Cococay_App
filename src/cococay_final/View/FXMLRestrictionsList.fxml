@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.BorderPane?>
+
+<BorderPane fx:id="restrictionsContainer" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="520.0" prefWidth="870.0" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cococay_final.View.FXMLRestrictionsListController">
+   <left>
+      <TableView fx:id="tableRestriction" BorderPane.alignment="CENTER">
+        <columns>
+          <TableColumn fx:id="columnRestrictionBeginDate" minWidth="100.0" prefWidth="180.0" text="Begin Date" />
+          <TableColumn fx:id="columnRestrictionEndDate" minWidth="-1.0" prefWidth="180.0" text="End Date" />
+            <TableColumn fx:id="columnRestrictionReason" minWidth="-1.0" prefWidth="509.0" text="Reason" />
+        </columns>
+      </TableView>
+   </left>
+</BorderPane>

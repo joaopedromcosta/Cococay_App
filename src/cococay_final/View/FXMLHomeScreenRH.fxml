@@ -11,7 +11,6 @@
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
@@ -69,11 +68,6 @@
                                     <Insets bottom="10.0" left="5.0" top="10.0" />
                                  </VBox.margin>
                               </Button>
-                              <Button fx:id="btnNewGoal" layoutX="15.0" layoutY="219.0" mnemonicParsing="false" onAction="#btnNewGoalClicked" prefHeight="48.0" prefWidth="48.0" styleClass="button-options" stylesheets="@../../cococay_style.css">
-                                 <VBox.margin>
-                                    <Insets bottom="10.0" left="5.0" top="10.0" />
-                                 </VBox.margin>
-                              </Button>
                               <Button fx:id="btnEmployees" layoutX="15.0" layoutY="287.0" mnemonicParsing="false" onAction="#btnEmployeesClicked" prefHeight="48.0" prefWidth="48.0" styleClass="button-options" stylesheets="@../../cococay_style.css">
                                  <VBox.margin>
                                     <Insets bottom="10.0" left="5.0" top="10.0" />
@@ -84,12 +78,17 @@
                                     <Insets bottom="10.0" left="5.0" top="10.0" />
                                  </VBox.margin>
                               </Button>
+                              <Button fx:id="btnListData" layoutX="15.0" layoutY="491.0" mnemonicParsing="false" onAction="#btnListDataClicked" prefHeight="48.0" prefWidth="48.0" styleClass="button-options" stylesheets="@../../cococay_style.css">
+                                 <VBox.margin>
+                                    <Insets bottom="10.0" left="5.0" top="10.0" />
+                                 </VBox.margin>
+                              </Button>
                               <Button fx:id="btnRecordAbsence" layoutX="15.0" layoutY="423.0" mnemonicParsing="false" onAction="#btnRecordAbsenceClicked" prefHeight="48.0" prefWidth="48.0" styleClass="button-options" stylesheets="@../../cococay_style.css">
                                  <VBox.margin>
                                     <Insets bottom="10.0" left="5.0" top="10.0" />
                                  </VBox.margin>
                               </Button>
-                              <Button fx:id="btnListData" layoutX="15.0" layoutY="491.0" mnemonicParsing="false" onAction="#btnListDataClicked" prefHeight="48.0" prefWidth="48.0" styleClass="button-options" stylesheets="@../../cococay_style.css">
+                              <Button fx:id="btnNewGoal" layoutX="15.0" layoutY="219.0" mnemonicParsing="false" onAction="#btnNewGoalClicked" prefHeight="48.0" prefWidth="48.0" styleClass="button-options" stylesheets="@../../cococay_style.css">
                                  <VBox.margin>
                                     <Insets bottom="10.0" left="5.0" top="10.0" />
                                  </VBox.margin>
@@ -104,13 +103,6 @@
                      <HBox.margin>
                         <Insets bottom="10.0" />
                      </HBox.margin>
-                     <top>
-                        <Pane BorderPane.alignment="TOP_CENTER">
-                           <BorderPane.margin>
-                              <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                           </BorderPane.margin>
-                        </Pane>
-                     </top>
                   </BorderPane>
                </children>
                <padding>
@@ -123,7 +115,7 @@
    <top>
       <VBox BorderPane.alignment="CENTER">
          <children>
-            <MenuBar>
+            <MenuBar fx:id="menuBar">
               <menus>
                 <Menu mnemonicParsing="false" text="File">
                   <items>
@@ -166,12 +158,24 @@
                   <Insets bottom="5.0" />
                </VBox.margin>
             </ImageView>
-            <Label fx:id="lblEmployeeName" text="Nome Funcionário" />
-            <Label fx:id="lblEmployeeDpt" text="Nome do Dpt.">
+            <VBox>
+               <children>
+                  <Label fx:id="lblEmployeeName" text="Nome Funcionário" />
+                  <Label fx:id="lblEmployeeDpt" text="Nome do Dpt.">
+                     <VBox.margin>
+                        <Insets top="5.0" />
+                     </VBox.margin>
+                  </Label>
+                  <Label fx:id="lblNextHolidays" text="Next Holidays: N/A">
+                     <VBox.margin>
+                        <Insets top="5.0" />
+                     </VBox.margin>
+                  </Label>
+               </children>
                <VBox.margin>
-                  <Insets top="5.0" />
+                  <Insets bottom="10.0" left="50.0" right="10.0" top="10.0" />
                </VBox.margin>
-            </Label>
+            </VBox>
          </children>
          <BorderPane.margin>
             <Insets />

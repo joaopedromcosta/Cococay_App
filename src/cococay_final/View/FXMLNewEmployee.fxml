@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<BorderPane fx:id="container" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cococay_final.View.FXMLNewEmployeeController">
+   <bottom>
+      <HBox alignment="CENTER_RIGHT" BorderPane.alignment="CENTER">
+         <BorderPane.margin>
+            <Insets top="10.0" />
+         </BorderPane.margin>
+         <children>
+            <VBox alignment="CENTER">
+               <children>
+                  <Label fx:id="lblCurrentStep">
+                     <font>
+                        <Font name="System Bold" size="13.0" />
+                     </font>
+                  </Label>
+               </children>
+               <opaqueInsets>
+                  <Insets />
+               </opaqueInsets>
+               <HBox.margin>
+                  <Insets bottom="10.0" left="10.0" right="250.0" />
+               </HBox.margin>
+            </VBox>
+            <VBox alignment="CENTER">
+               <HBox.margin>
+                  <Insets bottom="10.0" left="10.0" right="10.0" />
+               </HBox.margin>
+               <children>
+                  <HBox>
+                     <children>
+                        <Button fx:id="btnGoBack" mnemonicParsing="false" prefWidth="51.0" styleClass="button-options" stylesheets="@../../cococay_style.css" text="Back" textAlignment="CENTER">
+                           <HBox.margin>
+                              <Insets right="10.0" />
+                           </HBox.margin>
+                        </Button>
+                        <Button fx:id="btnNext" mnemonicParsing="false" onAction="#btnNextClicked" prefWidth="51.0" styleClass="button-options" stylesheets="@../../cococay_style.css" text="Add" textAlignment="CENTER" />
+                     </children>
+                  </HBox>
+               </children>
+            </VBox>
+         </children>
+      </HBox>
+   </bottom>
+</BorderPane>

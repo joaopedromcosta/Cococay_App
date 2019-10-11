@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+
+<BorderPane fx:id="container" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="680.0" minWidth="-Infinity" prefWidth="870.0" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cococay_final.View.FXMLAbsencesOptionsController">
+   <bottom>
+      <VBox BorderPane.alignment="CENTER">
+         <children>
+            <HBox alignment="CENTER_RIGHT">
+               <children>
+                  <ComboBox fx:id="comboEmployees" prefWidth="250.0" promptText="choose the employee" stylesheets="@../../cococay_style.css">
+                     <HBox.margin>
+                        <Insets right="20.0" />
+                     </HBox.margin>
+                  </ComboBox>
+                  <DatePicker fx:id="datePickerDateOfAbsence" editable="false" styleClass="date-picker" stylesheets="@../../cococay_style.css">
+                     <HBox.margin>
+                        <Insets right="10.0" />
+                     </HBox.margin>
+                  </DatePicker>
+                  <CheckBox fx:id="checkJustified" mnemonicParsing="false" stylesheets="@../../cococay_style.css" text="Justified" textAlignment="CENTER" />
+               </children>
+               <VBox.margin>
+                  <Insets bottom="10.0" />
+               </VBox.margin>
+            </HBox>
+            <HBox alignment="CENTER_RIGHT">
+               <children>
+                  <TextField fx:id="txtJustification" prefHeight="27.0" prefWidth="555.0" promptText="insert the justification" styleClass="text-input" stylesheets="@../../cococay_style.css">
+                     <HBox.margin>
+                        <Insets bottom="10.0" />
+                     </HBox.margin>
+                  </TextField>
+               </children>
+            </HBox>
+            <HBox alignment="CENTER_RIGHT">
+               <children>
+                  <Label fx:id="lblWarnings" textFill="RED">
+                     <HBox.margin>
+                        <Insets right="50.0" />
+                     </HBox.margin>
+                  </Label>
+                  <Button fx:id="btnCancel" mnemonicParsing="false" onAction="#btnCancelClicked" styleClass="button-options" stylesheets="@../../cococay_style.css" text="Cancel">
+                     <HBox.margin>
+                        <Insets right="10.0" />
+                     </HBox.margin>
+                  </Button>
+                  <Button fx:id="btnAdd" mnemonicParsing="false" onAction="#btnAddClicked" prefWidth="63.0" styleClass="button-home" stylesheets="@../../cococay_style.css" text="Add" />
+               </children>
+               <VBox.margin>
+                  <Insets bottom="10.0" />
+               </VBox.margin>
+            </HBox>
+         </children>
+      </VBox>
+   </bottom>
+   <padding>
+      <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+   </padding>
+   <center>
+      <TableView fx:id="tableAbsences" stylesheets="@../../cococay_style.css" BorderPane.alignment="CENTER">
+        <columns>
+          <TableColumn fx:id="columnBeginDate" minWidth="120.0" prefWidth="75.0" text="Absence Date" />
+          <TableColumn fx:id="columnName" minWidth="300.0" prefWidth="75.0" text="Employee Name" />
+            <TableColumn fx:id="columnJustified" minWidth="100.0" prefWidth="75.0" text="Justified" />
+            <TableColumn fx:id="columnJustification" minWidth="330.0" prefWidth="75.0" text="Justification" />
+        </columns>
+         <BorderPane.margin>
+            <Insets bottom="10.0" />
+         </BorderPane.margin>
+      </TableView>
+   </center>
+</BorderPane>

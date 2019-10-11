@@ -20,6 +20,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -96,7 +97,7 @@ public class Repository {
         } catch (SQLException ex) { }
     }
     //update method
-    private void update(String sql_statement) {
+    public void update(String sql_statement) {
         em=emf.createEntityManager();
         if(!em.getTransaction().isActive())
             em.getTransaction().begin();
@@ -122,6 +123,33 @@ public class Repository {
         em.getTransaction().commit();
         em.clear();
         em.close();
+    }
+    //Verificar LogIn -> envia-se user e password inserida
+    public Funcionario logIn(String username, String password) throws Exception {
+        String sql_statement = "select * from login where '" + username + "' = username and '" + password + "' = password_field";
+        this.select(sql_statement);
+        if(this.result == null){
+            throw new Exception("Invalid username or password");
+        }
+        this.loggedEmployee.setIdFuncionario(this.result.getLong("id_funcionario"));
+        this.closeResult();
+        this.select("select nome from funcionario where id_funcionario = '" + this.loggedEmployee.getIdFuncionario() + "'");
+        this.loggedEmployee.setNome(this.result.getString("nome"));
+        System.out.println("Logged Employee number: "+this.loggedEmployee.getIdFuncionario() + " with name: " + this.loggedEmployee.getNome());
+        this.loggedEmployeeDpt = this.getDepartmentLoggedUser(this.loggedEmployee.getIdFuncionario());
+        this.closeResult();
+        this.select("select count(*) from funcionario where estado = 1 and id_funcionario = '" + this.loggedEmployee.getIdFuncionario() + "'");
+        if(this.result == null || this.result.getShort("count(*)") == 0){
+            throw new Exception("Invalid username or password");
+        }
+        return this.loggedEmployee;
+    }
+    
+    //Log out method
+    public void logout(){
+        this.loggedEmployee.setIdFuncionario(null);
+        this.loggedEmployee.setNome(null);
+        System.out.println("Successful Logout id: " + this.loggedEmployee.getIdFuncionario());
     }
     //Method responsible for check if in the current month select, anyone as holidays schedule
     public List<Ferias> getCurrentMonthHolidaysEmployees(int month, int year){
@@ -195,6 +223,24 @@ public class Repository {
             return temp;
         return null;
     }
+    //
+    public String getNextHolidays() {
+        DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        String date = dtf.format(LocalDateTime.now());
+        String sql_statment = "select data_inicio from ferias where id_funcionario = '"+this.loggedEmployee.getIdFuncionario()+"' and "
+                + "data_inicio >= to_date('"+date+"','dd/MM/yyyy') and verificado_rh = '1' and aprovado = '1' order by data_inicio desc";
+        this.select(sql_statment);
+        if(this.result != null){
+            String dateGet = null;
+            try {
+                dateGet = dateFormat.format(this.result.getDate("data_inicio"));
+            } catch (SQLException ex) { }
+            return dateGet;
+        }else{
+            return "N/A";
+        }
+    }    
     //Get a string containing the name and department of a user
     public Short getNumberHolidaysLoggedEmployee(){
         String sql_statement = "select numero_dias_ferias_total from funcionario where id_funcionario = '" + this.loggedEmployee.getIdFuncionario() +"'";
@@ -369,28 +415,6 @@ public class Repository {
         } catch (SQLException ex) { }
         return false;
     }
-    //Verificar LogIn -> envia-se user e password inserida
-    public Funcionario logIn(String username, String password) throws Exception {
-        String sql_statement = "select * from login where '" + username + "' = username and '" + password + "' = password_field";
-        this.select(sql_statement);
-        if(this.result == null){
-            throw new Exception("The username or password entered are wrong");
-        }
-        this.loggedEmployee.setIdFuncionario(this.result.getLong("id_funcionario"));
-        this.select("select nome from funcionario where id_funcionario = '" + this.loggedEmployee.getIdFuncionario() + "'");
-        this.loggedEmployee.setNome(this.result.getString("nome"));
-        System.out.println("Logged Employee number: "+this.loggedEmployee.getIdFuncionario() + " with name: " + this.loggedEmployee.getNome());
-        this.loggedEmployeeDpt = this.getDepartmentLoggedUser(this.loggedEmployee.getIdFuncionario());
-        this.closeResult();
-        return this.loggedEmployee;
-    }
-    
-    //Log out method
-    public void logout(){
-        this.loggedEmployee.setIdFuncionario(null);
-        this.loggedEmployee.setNome(null);
-        System.out.println("Successful Logout id: " + this.loggedEmployee.getIdFuncionario());
-    }
     //
     public void addNewHoliday(DatePicker dtPickerBegin, DatePicker dtPickerEnd, int numberOfDays) {
         //
@@ -552,11 +576,28 @@ public class Repository {
                 }
             } catch (SQLException ex) { }
         }
+        this.closeResult();
         //Get department
+        for(Requests x: temp){
+            sql_statement = "SELECT EQUIPA.ABREVIATURA from EQUIPA, MEMBROS_EQUIPA, FERIAS WHERE MEMBROS_EQUIPA.ID_EQUIPA = EQUIPA.ID_EQUIPA AND "
+                    + "MEMBROS_EQUIPA.ID_FUNCIONARIO = FERIAS.ID_FUNCIONARIO AND FERIAS.ID_FERIAS = '" + x.getId()+ "'";
+            this.select(sql_statement);
+            String dptTemporary = null;
+            if(this.result != null){
+                try {
+                    dptTemporary = this.result.getString("ABREVIATURA");
+                    while(this.result.next()){
+                        dptTemporary = dptTemporary.concat(", " + this.result.getString("ABREVIATURA"));
+                    }
+                } catch (SQLException ex) { }
+            }
+            this.closeResult();
+            x.setDepartment(dptTemporary);
+        }
         
         return temp;
     }
-
+    //Set the new state of validation for a specific request
     public void setValidationRequest(Long id, boolean b) {
         String sql_statement = null;
         Long id_employee = null;
@@ -635,17 +676,496 @@ public class Repository {
             }
         }
     }
-
+    //Get all the employees working in the company
     public List<EmployeesForList> getEmployeesList() {
         List<EmployeesForList> tempList = new ArrayList<>();
         DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
         //
-        String sql_statement = "SELECT FUNCIONARIO.ID_FUNCIONARIO, FUNCIONARIO.NOME, FUNCIONARIO.DATA_CONTRATO, EQUIPA.DESIGNACAO from FUNCIONARIO, EQUIPA, "
-                + "MEMBROS_EQUIPA WHERE FUNCIONARIO.ID_FUNCIONARIO = MEMBROS_EQUIPA.ID_FUNCIONARIO AND MEMBROS_EQUIPA.ID_EQUIPA = EQUIPA.ID_EQUIPA "
-                + "ORDER BY FUNCIONARIO.ID_FUNCIONARIO";
-        
-        
+        String sql_statement = "SELECT ID_FUNCIONARIO, NOME, DATA_CONTRATO from FUNCIONARIO "
+                + "ORDER BY ID_FUNCIONARIO";
+        this.select(sql_statement);
+        if(this.result != null){
+            try {
+                EmployeesForList temp = new EmployeesForList(this.result.getLong("id_funcionario"), this.result.getString("nome"),
+                        (this.result.getDate("data_contrato") == null ? "": dateFormat.format(this.result.getDate("data_contrato"))));
+                tempList.add(temp);
+                while(this.result.next()){
+                    temp = new EmployeesForList(this.result.getLong("id_funcionario"), this.result.getString("nome"),
+                        (this.result.getDate("data_contrato") == null ? "": dateFormat.format(this.result.getDate("data_contrato"))));
+                    tempList.add(temp);
+                }
+            } catch (SQLException ex) { }
+        }
+        this.closeResult();
+        for(EmployeesForList x: tempList){
+            sql_statement = "SELECT EQUIPA.DESIGNACAO from EQUIPA, MEMBROS_EQUIPA WHERE MEMBROS_EQUIPA.ID_EQUIPA = EQUIPA.ID_EQUIPA AND ID_FUNCIONARIO = "
+                + "'" + x.getId() + "'";
+            this.select(sql_statement);
+            String dptTemporary = null;
+            if(this.result != null){
+                try {
+                    dptTemporary = this.result.getString("designacao");
+                    while(this.result.next()){
+                        dptTemporary = dptTemporary.concat("\n" + this.result.getString("designacao"));
+                    }
+                } catch (SQLException ex) { }
+            }
+            this.closeResult();
+            x.setDepartment(dptTemporary);
+        }
         return tempList;
     }
+    //
+    public void disableEmployee(EmployeesForList currentSelectedEmployee) {
+        String sql_statement = "update funcionario set estado = 0, data_contrato = null where id_funcionario = '"+currentSelectedEmployee.getId()+"'";
+        this.update(sql_statement);
+    }
 
+    public void enableEmployee(EmployeesForList currentSelectedEmployee) {
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+	String sql_statement = "update funcionario set estado = 1, data_contrato = to_date('"+dtf.format(LocalDate.now())+"','dd/MM/yyyy') where id_funcionario = '"+currentSelectedEmployee.getId()+"'";
+        this.update(sql_statement);
+    }
+    //The next method checks in the database if a certain field is already in use by another employee
+    public boolean isFieldAlreadyInDB(String sql_statement) {
+        this.select(sql_statement);
+        if(this.result != null){
+            try {
+                if(this.result.getShort("count(*)") > 0){
+                    this.closeResult();
+                    return true;
+                }
+            } catch (SQLException ex) { }
+        }
+        this.closeResult();
+        return false;
+    }
+    //Get the minimum wage
+    public float getMinimumWage() {
+        return ((float) 585.00);
+    }
+    //Get all the current created position available in the company
+    public List<FuncaoTrabalho> getPositionHeldList() {
+        List<FuncaoTrabalho> temp = new ArrayList<>();
+        String sql_statement = "select * from Funcao_Trabalho";
+        this.select(sql_statement);
+        FuncaoTrabalho x;
+        if(this.result != null){
+            try {
+                x = new FuncaoTrabalho();
+                x.setIdFuncaoTrabalho(this.result.getLong("id_funcao_trabalho"));
+                x.setDesignacaoEquipa(this.result.getString("designacao_equipa"));
+                temp.add(x);
+                while(this.result.next()){
+                    x = new FuncaoTrabalho();
+                    x.setIdFuncaoTrabalho(this.result.getLong("id_funcao_trabalho"));
+                    x.setDesignacaoEquipa(this.result.getString("designacao_equipa"));
+                    temp.add(x);
+                }
+            } catch (SQLException ex) { }
+        }
+        this.closeResult();
+        return temp;
+    }
+
+    public List<Equipa> getAllActiveDepartments() {
+        List<Equipa> temp = new ArrayList<>();
+        String sql_statement = "select * from Equipa where estado = '1'";
+        this.select(sql_statement);
+        Equipa x;
+        if(this.result != null){
+            try {
+                x = new Equipa();
+                x.setIdEquipa(this.result.getLong("id_equipa"));
+                x.setDesignacao(this.result.getString("designacao"));
+                x.setEstado(this.result.getShort("estado"));
+                x.setMinimoElementosTrabalhar(this.result.getShort("minimo_elementos_trabalhar"));
+                temp.add(x);
+                while(this.result.next()){
+                    x = new Equipa();
+                    x.setIdEquipa(this.result.getLong("id_equipa"));
+                    x.setDesignacao(this.result.getString("designacao"));
+                    x.setEstado(this.result.getShort("estado"));
+                    x.setMinimoElementosTrabalhar(this.result.getShort("minimo_elementos_trabalhar"));
+                    temp.add(x);
+                }
+            } catch (SQLException ex) { }
+        }
+        this.closeResult();
+        return temp;
+    }
+    
+    //if new position was created then add to the db
+    public FuncaoTrabalho addNewPositionHeld(String currentSelectedPositionHeld) {
+        String sql_statment = ("select max(id_funcao_trabalho) from funcao_trabalho");
+        this.select(sql_statment);
+        long id = 0;
+        if(this.result != null){
+            try {
+                id = this.result.getLong("max(id_funcao_trabalho)");
+                id++;
+            } catch (SQLException ex) {}
+        }
+        this.closeResult();
+        if(id != 0){
+            FuncaoTrabalho temp = new FuncaoTrabalho(id);
+            temp.setDesignacaoEquipa(currentSelectedPositionHeld);
+            this.insert(temp);
+            return temp;
+        }
+        return null;
+    }
+    //Add the new employee to the db
+    public Funcionario addNewEmployee(Funcionario temp) throws Exception {
+        String sql_statment = "select max(id_funcionario) from funcionario";
+        this.select(sql_statment);
+        long id = 0;
+        if(this.result != null){
+            try {
+                id = this.result.getLong("max(id_funcionario)");
+                id++;
+            } catch (SQLException ex) {}
+        }
+        this.closeResult();
+        if(id != 0){
+            temp.setIdFuncionario(id);
+            this.insert(temp);
+            return temp;
+        }else{
+            throw new Exception("Error: An error occured when trying to add the new employee. Contact the system Administrator!");
+        }
+    }
+    //add the new employee to all the departments he belongs
+    public void setDepartmentsForNewEmployee(List<Long> listOfIDDepartments, Long idFuncionario) {
+        String sql_statement;
+        int i = listOfIDDepartments.size();
+        for (int i2 = 0; i2 < i; i2++) {
+            if(i2 == i)
+                return;
+            System.out.println("Department setted ::" + listOfIDDepartments.size());
+            sql_statement = "INSERT INTO MEMBROS_EQUIPA(ID_EQUIPA, ID_FUNCIONARIO) VALUES(" + listOfIDDepartments.get(i2) + ", "+ idFuncionario + ")";
+            this.update(sql_statement);
+        }
+    }
+    //add the login parameters for the new employee
+    public void setNewLoggin(Funcionario funcionario, String text) {
+        Login temp = new Login();
+        temp.setIdFuncionario(funcionario);
+        temp.setUsername(text);
+        temp.setPasswordField(text);
+        temp.setEstado((short) 1);
+        temp.setPerguntaSeguranca1("N/A");
+        temp.setPerguntaSeguranca2("N/A");
+        temp.setRespostaSeguranca1("N/A");
+        temp.setRespostaSeguranca2("N/A");
+        this.insert(temp);
+    }
+    //Get all departments even if they are inactive
+    public List<Equipa> getAllDepartments() {
+        List<Equipa> temp = new ArrayList<>();
+        String sql_statement = "select * from Equipa order by estado DESC";
+        this.select(sql_statement);
+        Equipa x;
+        if(this.result != null){
+            try {
+                x = new Equipa();
+                x.setIdEquipa(this.result.getLong("id_equipa"));
+                x.setDesignacao(this.result.getString("designacao"));
+                x.setEstado(this.result.getShort("estado"));
+                x.setAbreviatura(this.result.getString("abreviatura"));
+                x.setMinimoElementosTrabalhar(this.result.getShort("minimo_elementos_trabalhar"));
+                temp.add(x);
+                while(this.result.next()){
+                    x = new Equipa();
+                    x.setIdEquipa(this.result.getLong("id_equipa"));
+                    x.setDesignacao(this.result.getString("designacao"));
+                    x.setEstado(this.result.getShort("estado"));
+                    x.setAbreviatura(this.result.getString("abreviatura"));
+                    x.setMinimoElementosTrabalhar(this.result.getShort("minimo_elementos_trabalhar"));
+                    temp.add(x);
+                }
+            } catch (SQLException ex) { }
+        }
+        this.closeResult();
+        return temp;
+    }
+
+    public Equipa addNewDepartment(String denomination, String abreviation, Integer minimum) {
+        Equipa temp = new Equipa();
+        String sql_statment = ("select max(id_equipa) from equipa");
+        this.select(sql_statment);
+        long id = 0;
+        if(this.result != null){
+            try {
+                id = this.result.getLong("max(id_equipa)");
+                id++;
+            } catch (SQLException ex) {}
+        }
+        this.closeResult();
+        if(id != 0){
+            temp.setIdEquipa(id);
+            temp.setDesignacao(denomination);
+            temp.setAbreviatura(abreviation);
+            temp.setMinimoElementosTrabalhar(Short.parseShort(String.valueOf(minimum)));
+            temp.setEstado((short) 1);
+            this.insert(temp);
+            return temp;
+        }
+        return null;
+    }
+
+    public List<Funcionario> getEmployeesListOfDepartment(Long dpt) {
+        List<Funcionario> tempList = new ArrayList<>();
+        //
+        String sql_statement = "SELECT FUNCIONARIO.ID_FUNCIONARIO, FUNCIONARIO.NOME from FUNCIONARIO, Membros_equipa"
+                + " where FUNCIONARIO.ID_FUNCIONARIO = Membros_equipa.ID_FUNCIONARIO and Membros_equipa.id_equipa = '"+dpt+"' ORDER BY ID_FUNCIONARIO";
+        this.select(sql_statement);
+        if(this.result != null){
+            try {
+                Funcionario temp = new Funcionario(this.result.getLong("Id_funcionario"));
+                temp.setNome(this.result.getString("nome"));
+                tempList.add(temp);
+                while(this.result.next()){
+                    temp = new Funcionario(this.result.getLong("Id_funcionario"));
+                    temp.setNome(this.result.getString("nome"));
+                    tempList.add(temp);
+                }
+            } catch (SQLException ex) { }
+        }
+        this.closeResult();
+        return tempList;
+    }
+    public List<Funcionario> getEmployeesListOfAllDepartments() {
+        List<Funcionario> tempList = new ArrayList<>();
+        //
+        String sql_statement = "SELECT ID_FUNCIONARIO, NOME from FUNCIONARIO"
+                + " ORDER BY ID_FUNCIONARIO";
+        this.select(sql_statement);
+        if(this.result != null){
+            try {
+                Funcionario temp = new Funcionario(this.result.getLong("Id_funcionario"));
+                temp.setNome(this.result.getString("nome"));
+                tempList.add(temp);
+                while(this.result.next()){
+                    temp = new Funcionario(this.result.getLong("Id_funcionario"));
+                    temp.setNome(this.result.getString("nome"));
+                    tempList.add(temp);
+                }
+            } catch (SQLException ex) { }
+        }
+        this.closeResult();
+        return tempList;
+    }
+    //Update the department details
+    public void updateDepartmentDetails(Equipa t) {
+        String sql_statement = "update equipa set designacao = '"+t.getDesignacao()+"', abreviatura = '"+t.getAbreviatura()+"', "
+                + "minimo_elementos_trabalhar = '"+t.getMinimoElementosTrabalhar()+"', estado = '"+t.getEstado()+"' where id_equipa = '"+t.getIdEquipa()+"'";
+        this.update(sql_statement);
+    }
+    //Remove employee from a department
+    public void removerEmployeeFromDepartment(Long idEquipa, Long idFuncionario) {
+        String sql_statment = "DELETE FROM MEMBROS_EQUIPA WHERE ID_EQUIPA = '"+idEquipa+"' AND ID_FUNCIONARIO = '"+idFuncionario+"'";
+        this.update(sql_statment);
+        
+    }
+
+    public Login getLoginData(String user) throws Exception {
+        String sql_statement = "select * from login where username = '"+user+"'";
+        Login temp = new Login();
+        this.select(sql_statement);
+        if(this.result != null){
+            Funcionario f = new Funcionario(this.result.getLong("id_funcionario"));
+            temp.setIdFuncionario(f);
+            temp.setPerguntaSeguranca1(this.result.getString("pergunta_seguranca1"));
+            temp.setRespostaSeguranca1(this.result.getString("resposta_seguranca1"));
+        }else{
+            throw new Exception("Username invalid!");
+        }
+        this.closeResult();
+        return temp;
+    }
+
+    public void changeUserPassword(Long idFuncionario, String text) {
+        String sql_statement = "update login set password_field = '"+text+"' where id_funcionario = '"+idFuncionario+"'";
+        this.update(sql_statement);
+    }
+
+    //
+     //add new restriction
+    public void addRestriction(DatePicker beginDate, DatePicker endDate, String Reason){
+        long max=0;
+         max=this.getMAxIdRestriction();
+        max++;
+        RestricaoFerias restricao = new RestricaoFerias();
+        restricao.setIdRestricao(max);
+        restricao.setDataInicio(Date.valueOf(beginDate.getValue()));
+        restricao.setDataFim(Date.valueOf(endDate.getValue()));
+        restricao.setMotivo(Reason);
+        restricao.setIdFuncionario(loggedEmployee);
+        this.insert(restricao);
+    }
+  // get mac id Restriction
+    public long getMAxIdRestriction(){
+        this.select("select MAX(id_restricao) from RESTRICAO_FERIAS");
+        long max = (long) Long.parseLong("6000000000");
+        try {
+            max = this.result.getLong("MAX(id_restricao)");
+        } catch (SQLException ex) { 
+            ex.printStackTrace();
+        }
+        
+        return max;
+    }
+    // check date for accept or not a restriction
+    public boolean checkDateRestriction(String beginDate , String endDate){
+        System.out.println("entrei nesta funÁao");
+        String sql_statement = "select count(*) from Restricao_ferias where  "
+                + "to_date('"+ beginDate+"','DD/MM/YY') >= DATA_INICIO "
+                + "and to_date('"+ beginDate+"','DD/MM/YY') <= DATA_FIM "
+                + "or to_date('"+ endDate+"','DD/MM/YY') >= DATA_INICIO "
+                + "and to_date('"+ endDate+"','DD/MM/YY') <= DATA_FIM";
+        this.select(sql_statement);
+        if(this.result==null){
+            return false;
+        }
+        try{
+            if(this.result.getShort("count(*)")>0){
+                System.out.println("resultadocrlh "+this.result.getShort("count(*)"));
+                return false;
+            }
+        }catch(SQLException ex){
+            ex.printStackTrace();
+        }
+        return true;
+    }
+    //Get all the Restrictions
+    public List<Restrictions> getRestrictionsList(){
+    DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+    List<Restrictions> temp = new ArrayList<>();
+    String sql_statement ="select ID_RESTRICAO,DATA_INICIO,DATA_FIM,MOTIVO from RESTRICAO_FERIAS where DATA_FIM >= SYSDATE-1";
+    this.select(sql_statement);
+    if(this.result!=null){
+        try{
+            Restrictions restrictions = new Restrictions(this.result.getLong("ID_RESTRICAO"), 
+                    dateFormat.format(this.result.getDate("DATA_INICIO")),
+                    dateFormat.format(this.result.getDate("DATA_FIM")), 
+                    this.result.getString("MOTIVO"));
+            temp.add(restrictions);
+            while(this.result.next()){
+                restrictions=  new Restrictions(this.result.getLong("ID_RESTRICAO"), 
+                    dateFormat.format(this.result.getDate("DATA_INICIO")),
+                    dateFormat.format(this.result.getDate("DATA_FIM")), 
+                    this.result.getString("MOTIVO"));
+                temp.add(restrictions);
+            }
+        }catch(SQLException ex){
+            System.out.println(ex.getMessage());
+        } 
+    }
+    return temp;
+    }
+    //Get all validated holidays
+    public List<HolidaysForList> getAllHolidays(){
+        DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        List<HolidaysForList> temp = new ArrayList<>();
+        String sql_statment = "select ferias.id_funcionario, ferias.data_inicio, ferias.data_fim, funcionario.nome from ferias, funcionario"
+                + " where ferias.id_funcionario = funcionario.id_funcionario and ferias.data_inicio >= "
+                + "to_date('"+dtf.format(LocalDate.now())+"','dd/MM/yyyy') and verificado_rh = 1 and aprovado = 1 order by ferias.data_inicio asc";
+        this.select(sql_statment);
+        if(this.result != null){
+            HolidaysForList t = new HolidaysForList();
+            try {
+                t.setId(this.result.getLong("id_funcionario"));
+                t.setBeginDate(dateFormat.format(this.result.getDate("data_inicio")));
+                t.setEndDate(dateFormat.format(this.result.getDate("data_fim")));
+                t.setName(this.result.getString("nome"));
+                temp.add(t);
+                while(this.result.next()){
+                    t = new HolidaysForList();
+                    t.setId(this.result.getLong("id_funcionario"));
+                    t.setBeginDate(dateFormat.format(this.result.getDate("data_inicio")));
+                    t.setEndDate(dateFormat.format(this.result.getDate("data_fim")));
+                    t.setName(this.result.getString("nome"));
+                    temp.add(t);
+                }
+            } catch (SQLException ex) {}
+        }
+        this.closeResult();
+        for(HolidaysForList x: temp){
+            sql_statment = "SELECT EQUIPA.DESIGNACAO from EQUIPA, MEMBROS_EQUIPA WHERE MEMBROS_EQUIPA.ID_EQUIPA = EQUIPA.ID_EQUIPA AND ID_FUNCIONARIO = "
+                + "'" + x.getId() + "'";
+            this.select(sql_statment);
+            String dptTemporary = null;
+            if(this.result != null){
+                try {
+                    dptTemporary = this.result.getString("designacao");
+                    while(this.result.next()){
+                        dptTemporary = dptTemporary.concat("\n" + this.result.getString("designacao"));
+                    }
+                } catch (SQLException ex) { }
+            }
+            this.closeResult();
+            x.setDepartments(dptTemporary);
+        }
+        return temp;
+    }
+
+    public void addNewAbsence(Falta temp) throws Exception {
+        temp.setIdFuncionarioRegista(this.loggedEmployee);
+        String sql_statment = "select max(id_falta) from falta";
+        this.select(sql_statment);
+        if(this.result != null){
+            try {
+                temp.setIdFalta(this.result.getLong("max(id_falta)") + 1);
+            } catch (SQLException ex) { }
+        }else{
+            throw new Exception("ID Error");
+        }
+        this.closeResult();
+        this.insert(temp);
+    }
+    
+    public List<AbsencesForList> getAllAbsences(){
+        DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+        List<AbsencesForList> temp = new ArrayList<>();
+        String sql_statment = "select * from falta order by data_falta asc";
+        this.select(sql_statment);
+        if(this.result != null){
+            AbsencesForList x = new AbsencesForList();
+            try {
+                x.setDate(dateFormat.format(this.result.getDate("data_falta")));
+                x.setId(this.result.getLong("id_funcionario_falta"));
+                if(this.result.getShort("justificada") == 1){
+                    x.setJustified("Yes");
+                    x.setJustification(this.result.getString("descricao"));
+                }else{
+                        x.setJustified("No");
+                        x.setJustification("N/A");
+                    }
+                temp.add(x);
+                while(this.result.next()){
+                    x = new AbsencesForList();
+                    x.setDate(dateFormat.format(this.result.getDate("data_falta")));
+                    x.setId(this.result.getLong("id_funcionario_falta"));
+                    if(this.result.getShort("justificada") == 1){
+                        x.setJustified("Yes");
+                        x.setJustification(this.result.getString("descricao"));
+                    }else{
+                        x.setJustified("No");
+                        x.setJustification("N/A");
+                    }
+                    temp.add(x);
+                }
+                this.closeResult();
+                for(AbsencesForList f: temp){
+                    sql_statment = "select nome from funcionario where id_funcionario = '"+f.getId()+"'";
+                    this.select(sql_statment);
+                    f.setName(this.result.getString("nome"));
+                }
+            } catch (SQLException ex) { System.out.println("ups");}
+        }
+        this.closeResult();
+        return temp;
+    }
 }

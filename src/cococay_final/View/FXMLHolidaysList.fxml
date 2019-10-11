@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.BorderPane?>
+
+<BorderPane fx:id="container" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cococay_final.View.FXMLHolidaysListController">
+   <center>
+      <TableView fx:id="tableHolidays" stylesheets="@../../cococay_style.css" BorderPane.alignment="CENTER">
+        <columns>
+          <TableColumn fx:id="columnBeginDate" maxWidth="150.0" minWidth="150.0" prefWidth="150.0" text="Begin Date" />
+          <TableColumn fx:id="columnEndDate" maxWidth="150.0" minWidth="150.0" prefWidth="150.0" text="End Date" />
+            <TableColumn fx:id="columnName" maxWidth="350.0" minWidth="350.0" prefWidth="350.0" text="Employee Name" />
+            <TableColumn fx:id="columnDepartments" maxWidth="200.0" minWidth="200.0" prefWidth="200.0" text="Employee Departments" />
+        </columns>
+      </TableView>
+   </center>
+</BorderPane>

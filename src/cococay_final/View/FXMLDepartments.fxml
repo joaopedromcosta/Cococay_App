@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Spinner?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<BorderPane fx:id="container" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cococay_final.View.FXMLDepartmentsController">
+   <center>
+      <TableView fx:id="tableDepartments" prefHeight="450.0" stylesheets="@../../cococay_style.css" BorderPane.alignment="CENTER">
+        <columns>
+          <TableColumn fx:id="columnID" maxWidth="150.0" minWidth="150.0" prefWidth="150.0" text="Department ID" />
+          <TableColumn fx:id="columnDenomination" maxWidth="350.0" minWidth="350.0" prefWidth="350.0" text="Denomination" />
+            <TableColumn fx:id="columnAbbreviation" maxWidth="150.0" minWidth="150.0" prefWidth="150.0" text="Abbreviation" />
+            <TableColumn fx:id="columnMinimumNumberEmployees" maxWidth="200.0" minWidth="200.0" prefWidth="200.0" text="Minimum Elem. on Work" />
+        </columns>
+      </TableView>
+   </center>
+   <bottom>
+      <HBox alignment="CENTER_RIGHT" BorderPane.alignment="CENTER">
+         <children>
+            <VBox>
+               <children>
+                  <Label text="New Department:">
+                     <VBox.margin>
+                        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                     </VBox.margin>
+                     <font>
+                        <Font size="14.0" />
+                     </font>
+                  </Label>
+                  <HBox alignment="CENTER_LEFT">
+                     <children>
+                        <Label text="Denomination">
+                           <HBox.margin>
+                              <Insets right="10.0" />
+                           </HBox.margin>
+                        </Label>
+                        <TextField fx:id="txtDenomination" prefHeight="27.0" prefWidth="202.0" styleClass="text-input" stylesheets="@../../cococay_style.css" />
+                     </children>
+                     <VBox.margin>
+                        <Insets bottom="10.0" left="10.0" right="10.0" />
+                     </VBox.margin>
+                  </HBox>
+                  <HBox alignment="CENTER">
+                     <children>
+                        <Label text="Minimum No. Employees on Work">
+                           <HBox.margin>
+                              <Insets right="10.0" />
+                           </HBox.margin>
+                        </Label>
+                        <Spinner fx:id="spinMinimumElements" editable="true" prefHeight="27.0" prefWidth="81.0" />
+                     </children>
+                     <VBox.margin>
+                        <Insets bottom="10.0" left="10.0" right="10.0" />
+                     </VBox.margin>
+                  </HBox>
+                  <HBox alignment="CENTER_RIGHT">
+                     <children>
+                        <Label text="Abbreviation">
+                           <HBox.margin>
+                              <Insets right="10.0" />
+                           </HBox.margin>
+                        </Label>
+                        <TextField fx:id="txtAbbreviation" prefHeight="27.0" prefWidth="81.0" styleClass="text-input" stylesheets="@../../cococay_style.css" />
+                     </children>
+                     <VBox.margin>
+                        <Insets bottom="5.0" left="10.0" right="10.0" />
+                     </VBox.margin>
+                  </HBox>
+                  <Label fx:id="lblWarnings" textFill="RED">
+                     <font>
+                        <Font size="14.0" />
+                     </font>
+                     <VBox.margin>
+                        <Insets bottom="5.0" />
+                     </VBox.margin>
+                  </Label>
+                  <HBox alignment="CENTER_RIGHT">
+                     <children>
+                        <Button fx:id="btnAddUpdateDpt" mnemonicParsing="false" onAction="#btnAddDetailsClicked" styleClass="button-options" stylesheets="@../../cococay_style.css" text="Add Department" textAlignment="CENTER" />
+                     </children>
+                     <VBox.margin>
+                        <Insets bottom="10.0" left="10.0" right="10.0" top="5.0" />
+                     </VBox.margin>
+                  </HBox>
+               </children>
+               <HBox.margin>
+                  <Insets />
+               </HBox.margin>
+            </VBox>
+         </children>
+      </HBox>
+   </bottom>
+</BorderPane>

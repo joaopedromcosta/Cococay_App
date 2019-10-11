@@ -14,7 +14,7 @@
          <children>
             <HBox alignment="CENTER_RIGHT" VBox.vgrow="ALWAYS">
                <children>
-                  <Button fx:id="btnRefresh" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" onAction="#btnRefreshClicked" styleClass="button-options" stylesheets="@../../cococay_style.css">
+                  <Button fx:id="btnRefresh" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" maxHeight="24.0" maxWidth="24.0" minHeight="24.0" minWidth="24.0" mnemonicParsing="false" onAction="#btnRefreshClicked" prefHeight="24.0" prefWidth="24.0" styleClass="button-options" stylesheets="@../../cococay_style.css">
                      <HBox.margin>
                         <Insets right="10.0" />
                      </HBox.margin>
